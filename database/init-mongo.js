@@ -1,14 +1,12 @@
-// Connect to the marketplace database
 db = db.getSiblingDB('marketplace');
 
-// Create the Users collection and set indexes
 db.createCollection('users');
 db.users.createIndex({ "email": 1 }, { unique: true }); // Ensure email is unique
 db.users.insertMany([
   {
     username: "john_doe",
     email: "john@example.com",
-    password: "hashed_password_here", // Note: Passwords should be hashed in your application code
+    password: "hashed_password_here", 
     role: "seller",
     createdAt: new Date(),
   },
@@ -21,7 +19,6 @@ db.users.insertMany([
   }
 ]);
 
-// Create the Products collection and set indexes
 db.createCollection('products');
 db.products.createIndex({ "name": "text", "description": "text" }); // Full-text search index
 db.products.createIndex({ "category": 1 });
@@ -49,7 +46,6 @@ db.products.insertMany([
   }
 ]);
 
-// Create the Orders collection
 db.createCollection('orders');
 db.orders.createIndex({ "buyerId": 1 });
 db.orders.createIndex({ "sellerId": 1 });
@@ -63,4 +59,3 @@ db.orders.insertOne({
   createdAt: new Date(),
 });
 
-// Optional: Create other collections like Messages, Reviews, etc.
