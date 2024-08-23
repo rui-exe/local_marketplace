@@ -2,15 +2,10 @@ package main
 
 import (
 	"backend/routes"
-	"context"
 	"log"
-	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -21,25 +16,23 @@ func main() {
 	}
 
 	// Initialize Gin
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Logger())
 
-	// Connect to MongoDB (example)
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(os.Getenv("MONGO_URI")))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
-	db := client.Database("marketplace")
+	routes.AuthRoutes(router)
+	routes.UserRoutes(router)
 
-	// Setup routes
-	routes.SetupRoutes(router, db)
+	router.GET("/api-1", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"succes": "access granted for api-1",
+		})
+	})
 
-	// Start the server
+	router.GET("/api-2", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"succes": "access granted for api-2",
+		})
+	})
+
 	router.Run(":8080")
 }
