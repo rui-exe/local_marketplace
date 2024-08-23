@@ -1,53 +1,34 @@
 <script>
-	import Header from './Header.svelte';
-	import '../app.css';
-</script>
-
-<div class="app">
-	<Header />
-
-	<main>
-		<slot />
-	</main>
-
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
-</div>
-
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
+    import "../app.css";
+    export let title = "Local Marketplace";
+  </script>
+  <header class="bg-blue-600 text-white shadow-md">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">
+        {title}
+      </h1>
+      <nav>
+        <ul class="flex space-x-4">
+          <li>
+            <a href="/" class="hover:text-blue-300">Home</a>
+          </li>
+          <li>
+            <a href="/about" class="hover:text-blue-300">About</a>
+          </li>
+          <li>
+            <a href="/profile" class="hover:text-blue-300">Profile</a>
+          </li>
+          <li>
+            <a href="/login" class="hover:text-blue-300">Login</a>
+          </li>
+          <li>
+            <a href="/signup" class="hover:text-blue-300">Sign Up</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <main>
+    <slot></slot>
+  </main>

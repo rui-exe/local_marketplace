@@ -4,6 +4,7 @@ import (
 	"backend/routes"
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -19,6 +20,13 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+
+	router.Use(cors.New(cors.Config{
+		// Allow all origins
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Authorization", "Content-Type", "Accept"},
+	}))
 
 	routes.AuthRoutes(router)
 	routes.UserRoutes(router)
