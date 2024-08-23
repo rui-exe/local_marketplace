@@ -13,7 +13,7 @@ import (
 // User represents a user in the database
 type User struct {
 	ID            primitive.ObjectID `bson:"_id"`
-	Username      *string            `json:"username" validate:"required,min=4, max=25"`
+	Username      *string            `json:"username" validate:"required,min=4,max=25"`
 	Password      *string            `json:"password" validate:"required,min=6"`
 	Email         *string            `json:"email" validate:"required,email"`
 	Phone         *string            `json:"phone" validate:"required"`

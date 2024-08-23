@@ -51,6 +51,12 @@ func Signup() gin.HandlerFunc {
 		// validate user input
 		err = validate.Struct(user)
 
+		//check if user type is admin
+		if *user.User_type == "ADMIN" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user type cannot be admin"})
+			return
+		}
+
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
@@ -150,21 +156,35 @@ func Login() gin.HandlerFunc {
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("user_id")
+
+		// Matching the user type to the UID (presuming this function is correctly implemented)
 		if err := helpers.MatchUserTypeToUid(c, userID); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-		var user models.User
 
-		err := userCollection.FindOne(ctx, models.User{User_id: userID}).Decode(&user)
-		defer cancel()
-
+		// Convert the user ID to an ObjectID
+		objID, err := primitive.ObjectIDFromHex(userID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 			return
 		}
 
+		// Create a context with a timeout
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel() // Make sure to defer the cancel right after creating the context
+
+		// Initialize a user model to store the result
+		var user models.User
+
+		// Query the database for the user with the provided ObjectId
+		err = userCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+			return
+		}
+
+		// Return the found user as a JSON response
 		c.JSON(http.StatusOK, user)
 	}
 }

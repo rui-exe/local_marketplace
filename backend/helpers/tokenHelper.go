@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -52,4 +53,30 @@ func GenerateAllTokens(email string, username string, uid string, user_type stri
 	}
 
 	return token, refreshToken, err
+}
+
+func ValidateToken(signedToken string) (claims *SignedDetails, err error) {
+	token, err := jwt.ParseWithClaims(signedToken, &SignedDetails{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_KEY), nil
+	})
+
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+
+	claims, ok := token.Claims.(*SignedDetails)
+	if !ok {
+		err = errors.New("token is invalid")
+		log.Panic(err)
+		return
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		err = errors.New("token has expired")
+		log.Panic(err)
+		return
+	}
+
+	return claims, nil
 }
