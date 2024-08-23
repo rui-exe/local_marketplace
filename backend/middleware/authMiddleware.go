@@ -4,6 +4,7 @@ import (
 	"backend/helpers"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,16 @@ func Authenticate() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		//Strip the Bearer string from the token
+		tokenParts := strings.Split(clientToken, " ")
+		if len(tokenParts) != 2 {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid/Malformed auth token format"})
+			c.Abort()
+			return
+		}
+
+		clientToken = tokenParts[1]
 
 		claims, err := helpers.ValidateToken(clientToken)
 		if err != nil {

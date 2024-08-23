@@ -5,7 +5,6 @@ import (
 	"backend/helpers"
 	"backend/models"
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -19,12 +18,12 @@ import (
 var userCollection = database.OpenCollection(database.Client, "user")
 var validate = validator.New()
 
-func HashPassword(password string) string {
+func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
-		log.Panic(err)
+		return "", err
 	}
-	return string(bytes)
+	return string(bytes), nil
 }
 
 func VerifyPassword(hashedPassword string, password string) (bool, string) {
@@ -64,13 +63,11 @@ func Signup() gin.HandlerFunc {
 
 		countEmail, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
 		if err != nil {
-			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while checking user email"})
 		}
 
 		countPhone, err := userCollection.CountDocuments(ctx, bson.M{"phone": user.Phone})
 		if err != nil {
-			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while checking user phone"})
 		}
 
@@ -79,7 +76,11 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		hashedPassword := HashPassword(*user.Password)
+		hashedPassword, err := HashPassword(*user.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while hashing password"})
+			return
+		}
 		user.Password = &hashedPassword
 
 		user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
