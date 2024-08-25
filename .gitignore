@@ -24,3 +24,7 @@ go.work.sum
 # env file
 .env
 */.env
+
+# mongo data directory
+mongo_data/*
+mongo_data/

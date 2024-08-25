@@ -156,36 +156,23 @@ func Login() gin.HandlerFunc {
 
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.Param("user_id")
-
-		// Matching the user type to the UID (presuming this function is correctly implemented)
-		if err := helpers.MatchUserTypeToUid(c, userID); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Convert the user ID to an ObjectID
-		objID, err := primitive.ObjectIDFromHex(userID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-			return
-		}
+		username := c.Param("username")
 
 		// Create a context with a timeout
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel() // Make sure to defer the cancel right after creating the context
 
 		// Initialize a user model to store the result
-		var user models.User
+		var user models.UserDisplay
 
-		// Query the database for the user with the provided ObjectId
-		err = userCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+		// Check if the user exists
+		err := userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
 
-		// Return the found user as a JSON response
+		// If no error is found, return the user
 		c.JSON(http.StatusOK, user)
 	}
 }

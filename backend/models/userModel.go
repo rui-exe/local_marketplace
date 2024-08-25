@@ -1,13 +1,9 @@
 package models
 
 import (
-	"context"
-	"errors"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // User represents a user in the database
@@ -26,20 +22,11 @@ type User struct {
 	User_id       string             `json:"user_id"`
 }
 
-// GetUser retrieves a user from the database by username
-func GetUser(db *mongo.Database, username string) (*User, error) {
-	// Get the users collection
-	users := db.Collection("users")
-
-	// Find the user by username
-	var user User
-	err := users.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
-	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, errors.New("user not found")
-		}
-		return nil, err
-	}
-
-	return &user, nil
+type UserDisplay struct {
+	ID         primitive.ObjectID `bson:"_id"`
+	Username   *string            `json:"username"`
+	Email      *string            `json:"email"`
+	Phone      *string            `json:"phone"`
+	Role       *string            `json:"role"`
+	Created_at time.Time          `json:"created_at"`
 }

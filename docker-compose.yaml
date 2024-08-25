@@ -12,6 +12,7 @@ services:
       - "27017:27017"
     volumes:
       - ./database:/docker-entrypoint-initdb.d/ 
+      - ./mongo_data:/data/db
   frontend:
     build: ./frontend
     ports:
