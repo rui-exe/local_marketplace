@@ -11,4 +11,5 @@ func UserRoutes(incomingRoutes *gin.Engine) {
 	userRoutes := incomingRoutes.Group("/users")
 	userRoutes.Use(middleware.Authenticate())
 	userRoutes.GET("/:username", controllers.GetUser())
+	userRoutes.POST("/upload/picture", controllers.UploadPicture())
 }

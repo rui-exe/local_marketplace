@@ -176,3 +176,45 @@ func GetUser() gin.HandlerFunc {
 		c.JSON(http.StatusOK, user)
 	}
 }
+
+func UploadPicture() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username := c.GetString("username")
+		file, err := c.FormFile("file")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Create a context with a timeout
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel() // Make sure to defer the cancel right after creating the context
+
+		// Initialize a user model to store the result
+		var user models.User
+
+		// Check if the user exists
+		err = userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// The file will be stored in the backend/images folder
+		random_uid := primitive.NewObjectID().Hex()
+		err = c.SaveUploadedFile(file, "backend/images/"+random_uid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while saving the file"})
+			return
+		}
+
+		// Update the user's picture field in the database
+		_, err = userCollection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"picture": random_uid}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while updating the user's picture"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
+	}
+}
