@@ -12,9 +12,9 @@ type Product struct {
 	Description string             `json:"description" validate:"required,min=10"`
 	Price       float64            `json:"price" validate:"required,gt=0"`
 	Category    string             `json:"category" validate:"required"`
-	SellerID    primitive.ObjectID `json:"seller_id" validate:"required"`
+	Status      string             `json:"status" validate:"required,eq=AVAILABLE|eq=SOLD-OUT"`
+	Seller_id   primitive.ObjectID `json:"seller_id" validate:"required"`
 	Picture     *string            `json:"picture"`
-	CreatedAt   time.Time          `json:"created_at"`
-	UpdatedAt   time.Time          `json:"updated_at"`
-	Status      string             `json:"status" validate:"required,oneof=available sold"`
+	Created_at  time.Time          `json:"created_at"`
+	Updated_at  time.Time          `json:"updated_at"`
 }

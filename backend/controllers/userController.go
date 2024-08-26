@@ -21,7 +21,7 @@ import (
 )
 
 var userCollection = database.OpenCollection(database.Client, "user")
-var validate = validator.New()
+var userValidate = validator.New()
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -52,8 +52,7 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		// validate user input
-		err = validate.Struct(user)
+		err = userValidate.Struct(user)
 
 		//check if user type is admin
 		if *user.User_type == "ADMIN" {
@@ -142,7 +141,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, err := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.Username, *foundUser.User_type, foundUser.User_id)
+		token, refreshToken, err := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.Username, foundUser.User_id, *foundUser.User_type)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while generating token"})
 			return
