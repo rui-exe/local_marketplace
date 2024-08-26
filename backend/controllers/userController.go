@@ -2,10 +2,15 @@ package controllers
 
 import (
 	"backend/database"
+	"backend/firebase"
 	"backend/helpers"
 	"backend/models"
+	"bytes"
 	"context"
+	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -200,16 +205,51 @@ func UploadPicture() gin.HandlerFunc {
 			return
 		}
 
-		// The file will be stored in the backend/images folder
-		random_uid := primitive.NewObjectID().Hex()
-		err = c.SaveUploadedFile(file, "backend/images/"+random_uid)
+		fileContent, err := file.Open()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while saving the file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while opening the file"})
+			return
+		}
+		defer fileContent.Close()
+
+		random_uid := primitive.NewObjectID().Hex()
+		fileName := fmt.Sprintf("profile_pictures/%s_%s", username, random_uid)
+
+		// Upload the file to Firebase
+		client, err := firebase.App.Storage(ctx)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while initializing Firebase client"})
 			return
 		}
 
+		bucket, err := client.Bucket("local-marketplace-fde45.appspot.com")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while initializing Firebase bucket"})
+			return
+		}
+
+		buf := bytes.NewBuffer(nil)
+		if _, err := io.Copy(buf, fileContent); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while copying the file"})
+			return
+		}
+
+		object := bucket.Object(fileName)
+		wc := object.NewWriter(ctx)
+		if _, err = wc.Write(buf.Bytes()); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while copying the file"})
+			return
+		}
+
+		if err := wc.Close(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while closing the writer"})
+			return
+		}
+
+		imageURL := fmt.Sprintf("https://firebasestorage.googleapis.com/v0/b/local-marketplace-fde45.appspot.com/o/%s?alt=media", url.PathEscape(fileName))
+
 		// Update the user's picture field in the database
-		_, err = userCollection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"picture": random_uid}})
+		_, err = userCollection.UpdateOne(ctx, bson.M{"username": username}, bson.M{"$set": bson.M{"picture": imageURL}})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while updating the user's picture"})
 			return
