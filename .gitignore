@@ -28,3 +28,5 @@ go.work.sum
 # mongo data directory
 mongo_data/*
 mongo_data/
+keys/
+keys/*
