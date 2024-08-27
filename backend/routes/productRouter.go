@@ -11,4 +11,5 @@ func ProductRoutes(incomingRoutes *gin.Engine) {
 	productRoutes := incomingRoutes.Group("/products")
 	productRoutes.Use(middleware.Authenticate())
 	productRoutes.POST("/", controllers.CreateProduct())
+	productRoutes.GET("/:product_id", controllers.GetProduct())
 }

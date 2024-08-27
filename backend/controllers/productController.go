@@ -74,3 +74,26 @@ func CreateProduct() gin.HandlerFunc {
 
 	}
 }
+
+func GetProduct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		var product models.Product
+		id, err := primitive.ObjectIDFromHex(c.Param("product_id"))
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product id"})
+			return
+		}
+
+		err = productCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&product)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while fetching product"})
+			return
+		}
+
+		c.JSON(http.StatusOK, product)
+	}
+}
