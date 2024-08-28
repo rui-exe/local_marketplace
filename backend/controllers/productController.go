@@ -117,6 +117,55 @@ func GetProduct() gin.HandlerFunc {
 	}
 }
 
+func UpdateProduct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		var product models.Product
+		id, err := primitive.ObjectIDFromHex(c.Param("product_id"))
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product id format"})
+			return
+		}
+
+		err = productCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&product)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+			return
+		}
+
+		uid := c.GetString("uid")
+
+		if !isUserOwnerOfProduct(uid, id) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized to access this resource, you are not the owner of this product"})
+			return
+		}
+
+		err = c.BindJSON(&product)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		err = productValidate.Struct(product)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		product.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+
+		_, err = productCollection.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": product})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while updating product"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Product updated successfully"})
+	}
+}
+
 func UploadProductPicture() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -242,5 +291,53 @@ func AddProductToWishlist() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "Product added to wishlist"})
+	}
+}
+
+func RemoveProductFromWishlist() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		var user models.User
+		var product models.Product
+		var product_id, err = primitive.ObjectIDFromHex(c.Param("product_id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product id format"})
+			return
+		}
+
+		err = productCollection.FindOne(ctx, bson.M{"_id": product_id}).Decode(&product)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+			return
+		}
+
+		err = userCollection.FindOne(ctx, bson.M{"user_id": c.GetString("uid")}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// Check if the product is in the user's wishlist
+		var found bool
+		for _, v := range user.Wishlist {
+			if v == product_id {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Product not in wishlist"})
+			return
+		}
+
+		_, err = userCollection.UpdateOne(ctx, bson.M{"user_id": c.GetString("uid")}, bson.M{"$pull": bson.M{"wishlist": product_id}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while removing product from wishlist"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Product removed from wishlist"})
 	}
 }
