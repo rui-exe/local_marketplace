@@ -12,4 +12,5 @@ func UserRoutes(incomingRoutes *gin.Engine) {
 	userRoutes.Use(middleware.Authenticate())
 	userRoutes.GET("/:username", controllers.GetUser())
 	userRoutes.POST("/upload/picture", controllers.UploadPicture())
+	userRoutes.GET("/wishlist/:username", controllers.GetWishlist())
 }

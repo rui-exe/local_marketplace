@@ -13,4 +13,5 @@ func ProductRoutes(incomingRoutes *gin.Engine) {
 	productRoutes.POST("/", controllers.CreateProduct())
 	productRoutes.GET("/:product_id", controllers.GetProduct())
 	productRoutes.POST("/upload/picture/:product_id", controllers.UploadProductPicture())
+	productRoutes.POST("/wishlist/:product_id", controllers.AddProductToWishlist())
 }

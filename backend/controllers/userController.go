@@ -257,3 +257,50 @@ func UploadPicture() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully"})
 	}
 }
+
+func GetWishlist() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username := c.Param("username")
+
+		// Create a context with a timeout
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel() // Make sure to defer the cancel right after creating the context
+
+		// Initialize a user model to store the result
+		var user models.User
+
+		// Check if the user exists
+		err := userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// Create a slice to store the products
+		var products []models.Product
+
+		if len(user.Wishlist) == 0 || user.Wishlist == nil {
+			return_products := []models.Product{}
+			c.JSON(http.StatusOK, return_products)
+			return
+		}
+
+		// Find all the products in the user's wishlist
+		cursor, err := productCollection.Find(ctx, bson.M{"_id": bson.M{"$in": user.Wishlist}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while fetching products"})
+			return
+		}
+
+		// Iterate through the cursor and decode the results
+		defer cursor.Close(ctx)
+		for cursor.Next(ctx) {
+			var product models.Product
+			cursor.Decode(&product)
+			products = append(products, product)
+		}
+
+		// If no error is found, return the products
+		c.JSON(http.StatusOK, products)
+	}
+}

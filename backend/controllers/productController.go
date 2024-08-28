@@ -197,3 +197,50 @@ func UploadProductPicture() gin.HandlerFunc {
 	}
 
 }
+
+func AddProductToWishlist() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+		var user models.User
+		var product models.Product
+		var product_id, err = primitive.ObjectIDFromHex(c.Param("product_id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product id format"})
+			return
+		}
+
+		err = productCollection.FindOne(ctx, bson.M{"_id": product_id}).Decode(&product)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+			return
+		}
+
+		err = userCollection.FindOne(ctx, bson.M{"user_id": c.GetString("uid")}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		if product.Seller_id.Hex() == user.ID.Hex() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot add your own product to your wishlist"})
+			return
+		}
+
+		// Check if the product is already in the user's wishlist
+		for _, v := range user.Wishlist {
+			if v == product_id {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Product already in wishlist"})
+				return
+			}
+		}
+
+		_, err = userCollection.UpdateOne(ctx, bson.M{"user_id": c.GetString("uid")}, bson.M{"$addToSet": bson.M{"wishlist": product_id}})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while adding product to wishlist"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Product added to wishlist"})
+	}
+}
