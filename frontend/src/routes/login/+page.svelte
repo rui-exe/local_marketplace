@@ -33,9 +33,7 @@
         // Store the token in local storage
         localStorage.setItem('token', data.token);
         // Redirect to the dashboard
-        setTimeout(() => {
           window.location.href = '/';
-        }, 2000);
       } catch (err) {
             success = '';
             console.error('Login failed:', err);
