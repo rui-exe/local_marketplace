@@ -65,6 +65,16 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
+		countUsername, err := userCollection.CountDocuments(ctx, bson.M{"username": user.Username})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while checking user username"})
+		}
+
+		if countUsername > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "username already exists"})
+			return
+		}
+
 		countEmail, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while checking user email"})
