@@ -23,9 +23,9 @@
     const response = await fetch('http://localhost:8080/users/me', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      credentials: 'include'
+      credentials: 'include', // Include the JWT token in the request
     });
 
     if (response.ok) {
@@ -35,6 +35,7 @@
 
     } else {
       authenticated.set(false);
+      username.set('');
     }
   });
 
@@ -53,7 +54,7 @@
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
         {#if $authenticated === true}
-          <a href="/users/{username}" class="text-sm font-semibold leading-6 text-gray-900">Profile</a>
+          <a href="/users/{$username}" class="text-sm font-semibold leading-6 text-gray-900">Profile</a>
           <button on:click|preventDefault={logout} class="text-sm font-semibold leading-6 text-gray-900 ml-4">Log out</button>
         {:else}
           <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>

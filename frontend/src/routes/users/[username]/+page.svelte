@@ -1,10 +1,25 @@
 <link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/styles/tailwind.css">
 <link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
 
+<script lang="ts">
+  export let data: {
+      user: {
+          username: string;
+          email: string;
+          phone: string;
+          role: string;
+          picture: string;
+          created_at: string;
+          wishlist: string[];
+      };
+  };
+  console.log(data);
+</script>
+
 <div class="profile-page">
   <section class="relative block h-500-px">
     <div class="absolute top-0 w-full h-full bg-center bg-cover" style="
-            background-image: url('https://images.unsplash.com/photo-1499336315816-097655dcfbda?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2710&amp;q=80');
+            background-image: url('/marketplace_wallpaper.png');
           ">
       <span id="blackOverlay" class="w-full h-full absolute opacity-50 bg-black"></span>
     </div>
@@ -21,7 +36,7 @@
           <div class="flex flex-wrap justify-center">
             <div class="w-full lg:w-3/12 px-4 lg:order-2 flex justify-center">
               <div class="relative">
-                <img alt="..." src="https://demos.creative-tim.com/notus-js/assets/img/team-2-800x800.jpg" class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px">
+                <img alt="..." src={data.user.picture} class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px">
               </div>
             </div>
             <div class="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
@@ -33,17 +48,22 @@
           </div>
           <div class="text-center mt-12">
             <h3 class="text-4xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2">
-              Jenna Stones
+              {data.user.username}
             </h3>
             <div class="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
-              <i class="fas fa-map-marker-alt mr-2 text-lg text-blueGray-400"></i>
-              Los Angeles, California
+              Member since {new Date(data.user.created_at).toLocaleDateString()}
+              <br>
+              Phone: {data.user.phone}
             </div>
             <div class="mb-2 text-blueGray-600 mt-10">
-              <i class="fas fa-briefcase mr-2 text-lg text-blueGray-400"></i>Solution Manager - Creative Tim Officer
+              Email: {data.user.email}
             </div>
             <div class="mb-2 text-blueGray-600">
-              <i class="fas fa-university mr-2 text-lg text-blueGray-400"></i>University of Computer Science
+              {#if data.user.role === 'BUYER'}
+                <span class="text-red-500">Buyer</span>
+              {:else}
+                <span class="text-green">Seller</span>
+              {/if}
             </div>
           </div>
           <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
@@ -56,7 +76,6 @@
                   warm, intimate feel with a solid groove structure. An
                   artist of considerable range.
                 </p>
-
               </div>
             </div>
           </div>
