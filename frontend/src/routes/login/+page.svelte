@@ -1,4 +1,5 @@
 <script>
+    import { goto } from '$app/navigation';
     let email = '';
     let password = '';
     let error = '';
@@ -19,6 +20,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email, password }),
+          credentials: 'include',
         });
   
         if (!response.ok) {
@@ -30,10 +32,8 @@
         success = 'Login successful!';
         error = '';
         console.log('Login successful:', data);
-        // Store the token in local storage
-        localStorage.setItem('token', data.token);
         // Redirect to the dashboard
-          window.location.href = '/';
+        goto('/');
       } catch (err) {
             success = '';
             console.error('Login failed:', err);

@@ -23,9 +23,10 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		// Allow all origins
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"Origin", "Authorization", "Content-Type", "Accept"},
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "Accept"},
+		AllowCredentials: true,
 	}))
 
 	routes.AuthRoutes(router)
