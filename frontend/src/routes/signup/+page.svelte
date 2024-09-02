@@ -35,9 +35,7 @@
       if (response.ok) {
         successMessage = 'Signup successful! Redirecting...';
         errorMessage = null;
-        setTimeout(() => {
-          goto('/login'); // Redirect to login page or wherever appropriate
-        }, 2000);
+        goto('/login');
       } else {
         const errorData = await response.json();
         errorMessage = errorData.error;

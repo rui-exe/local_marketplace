@@ -1,19 +1,42 @@
 <script>
   import "../app.css";
   import { onMount } from "svelte";
-  export let data;
+  import { authenticated, username} from "../stores/auth";
 
-  let loggedIn = false;
-  
+  async function logout() {
+    try {
+      const response = await fetch('http://localhost:8080/logout/', {
+        method: 'POST',
+        credentials: 'include', // Include the JWT token in the request
+      });
 
-  onMount(() => {
-    console.log(data);
-    loggedIn = data.loggedIn === "true";
+      if (response.ok) {
+        window.location.href = '/login';
+      } else {
+        console.error('Failed to log out');
+      }
+    } catch (err) {
+    }
+  }
+
+  onMount(async () => {
+    const response = await fetch('http://localhost:8080/users/me', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      authenticated.set(true);
+      const data = await response.json();
+      username.set(data.username);
+
+    } else {
+      authenticated.set(false);
+    }
   });
-
-
-
-
 
 </script>
 
@@ -29,9 +52,9 @@
         <a href="/marketplace" class="text-sm font-semibold leading-6 text-gray-900">Marketplace</a>
       </div>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-        {#if loggedIn}
-          <a href="/users/{data.username}" class="text-sm font-semibold leading-6 text-gray-900">Profile</a>
-          <button class="text-sm font-semibold leading-6 text-gray-900 ml-4">Log out</button>
+        {#if $authenticated === true}
+          <a href="/users/{username}" class="text-sm font-semibold leading-6 text-gray-900">Profile</a>
+          <button on:click|preventDefault={logout} class="text-sm font-semibold leading-6 text-gray-900 ml-4">Log out</button>
         {:else}
           <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
         {/if}

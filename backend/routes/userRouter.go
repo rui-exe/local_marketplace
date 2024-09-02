@@ -13,4 +13,8 @@ func UserRoutes(incomingRoutes *gin.Engine) {
 	userRoutes.GET("/:username", controllers.GetUser())
 	userRoutes.POST("/upload/picture", controllers.UploadPicture())
 	userRoutes.GET("/wishlist/:username", controllers.GetWishlist())
+	userRoutes.GET("/me", controllers.GetMe())
+	logoutRoutes := incomingRoutes.Group("/logout")
+	logoutRoutes.Use(middleware.Authenticate())
+	logoutRoutes.POST("/", controllers.Logout())
 }

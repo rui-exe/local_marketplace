@@ -1,5 +1,4 @@
 <script>
-    import { goto } from '$app/navigation';
     let email = '';
     let password = '';
     let error = '';
@@ -33,7 +32,7 @@
         error = '';
         console.log('Login successful:', data);
         // Redirect to the dashboard
-        goto('/');
+        window.location.href = '/';
       } catch (err) {
             success = '';
             console.error('Login failed:', err);

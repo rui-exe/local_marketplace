@@ -170,6 +170,14 @@ func Login() gin.HandlerFunc {
 
 }
 
+func Logout() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.SetCookie("token", "", -1, "/", "localhost", false, true)
+		c.SetCookie("loggedIn", "", -1, "/", "localhost", false, false)
+		c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
+	}
+}
+
 func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		username := c.Param("username")
@@ -314,5 +322,28 @@ func GetWishlist() gin.HandlerFunc {
 
 		// If no error is found, return the products
 		c.JSON(http.StatusOK, products)
+	}
+}
+
+func GetMe() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username := c.GetString("username")
+
+		// Create a context with a timeout
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel() // Make sure to defer the cancel right after creating the context
+
+		// Initialize a user model to store the result
+		var user models.User
+
+		// Check if the user exists
+		err := userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		}
+
+		// If no error is found, return the user
+		c.JSON(http.StatusOK, user)
 	}
 }
