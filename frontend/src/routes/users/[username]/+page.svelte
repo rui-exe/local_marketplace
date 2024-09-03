@@ -2,18 +2,31 @@
 <link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
 
 <script lang="ts">
+	import { username } from "../../../stores/auth";
+
   export let data: {
-      user: {
-          username: string;
-          email: string;
-          phone: string;
-          role: string;
-          picture: string;
-          created_at: string;
-          wishlist: string[];
-      };
+    user: {
+      username: string;
+      email: string;
+      phone: string;
+      role: string;
+      picture: string;
+      created_at: string;
+      wishlist: string[];
+    };
+    wishlist: {
+      _id: string;
+      name: string;
+      description: string;
+      price: number;
+      category: string;
+      status: string;
+      seller_id: string;
+      picture: string;
+      created_at: string;
+      updated_at: string;
+    }[];
   };
-  console.log(data);
 </script>
 
 <div class="profile-page">
@@ -36,7 +49,11 @@
           <div class="flex flex-wrap justify-center">
             <div class="w-full lg:w-3/12 px-4 lg:order-2 flex justify-center">
               <div class="relative">
-                <img alt="..." src={data.user.picture} class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px">
+                {#if data.user.picture}
+                  <img alt="..." src={data.user.picture} class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px">
+                {:else}
+                  <img alt="..." src="https://static.vecteezy.com/system/resources/previews/020/765/399/non_2x/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg" class="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px">
+                {/if}
               </div>
             </div>
             <div class="w-full lg:w-4/12 px-4 lg:order-3 lg:text-right lg:self-center">
@@ -47,8 +64,8 @@
             </div>
           </div>
           <div class="text-center mt-12">
-            <h3 class="text-4xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2">
-              {data.user.username}
+            <h3 class="text-4xl font-semibold leading-normal text-blueGray-700 mb-2">
+            {data.user.username}
             </h3>
             <div class="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
               Member since {new Date(data.user.created_at).toLocaleDateString()}
@@ -66,19 +83,49 @@
               {/if}
             </div>
           </div>
+          {#if data.user.role === 'BUYER'}
           <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
             <div class="flex flex-wrap justify-center">
               <div class="w-full lg:w-9/12 px-4">
-                <p class="mb-4 text-lg leading-relaxed text-blueGray-700">
-                  An artist of considerable range, Jenna the name taken by
-                  Melbourne-raised, Brooklyn-based Nick Murphy writes,
-                  performs and records all of his own music, giving it a
-                  warm, intimate feel with a solid groove structure. An
-                  artist of considerable range.
-                </p>
+                <h4 class="text-2xl font-semibold leading-normal mb-4 text-blueGray-700">
+                  {data.user.username}'s Wishlist
+                </h4>
+                <ul>
+                  {#each data.wishlist as product}
+                    <a href="/products/{product._id}">
+                      <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
+                        <div class="flex">
+                          <div class="w-1/4">
+                            {#if product.picture}
+                              <img
+                                src={product.picture}
+                                alt={product.name}
+                                class="w-full h-48 rounded-full object-cover"
+                              />
+                            {:else}
+                              <img
+                                src="https://sudbury.legendboats.com/resource/defaultProductImage"
+                                alt={product.name}
+                                class="w-full h-48 rounded-full object-cover"
+                              />
+                            {/if}
+                          </div>
+                          <div class="w-3/4 pl-4">
+                            <h5 class="text-xl font-semibold">{product.name}</h5>
+                            <p class="text-blueGray-600">{product.description}</p>
+                            <p class="text-blueGray-400">Category: {product.category}</p>
+                            <p class="text-blueGray-400">Price: ${product.price.toFixed(2)}</p>
+                            <p class="text-blueGray-400">Status: {product.status}</p>
+                          </div>
+                        </div>
+                      </li>
+                    </a>
+                  {/each}
+                </ul>
               </div>
             </div>
           </div>
+          {/if}
         </div>
       </div>
     </div>

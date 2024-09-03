@@ -17,7 +17,23 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
     const userData = await response.json();
 
+    const wishlistRequest = await fetch(`http://localhost:8080/users/wishlist/${username}`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+    });
+
+    if (!wishlistRequest.ok) {
+        throw new Error('Failed to load wishlist data');
+    }
+
+    const wishlistData = await wishlistRequest.json();
+
+    console.log('wishlistData', wishlistData);
+
     return {
-        user: userData
+        user: userData,
+        wishlist: wishlistData
     };
 };
