@@ -92,7 +92,7 @@
                 </h4>
                 <ul>
                   {#each data.wishlist as product}
-                    <a href="/products/{product._id}">
+                    <a href="/products/{product.ID}">
                       <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
                         <div class="flex">
                           <div class="w-1/4">
