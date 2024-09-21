@@ -32,8 +32,24 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
     console.log('wishlistData', wishlistData);
 
+    const sellingItemsRequest = await fetch(`http://localhost:8080/users/selling_items/${username}`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+    });
+
+    if (!sellingItemsRequest.ok) {
+        throw new Error('Failed to load selling items data');
+    }
+
+    const sellingItemsData = await sellingItemsRequest.json();
+
+    console.log('sellingItemsData', sellingItemsData);
+
     return {
         user: userData,
-        wishlist: wishlistData
+        wishlist: wishlistData,
+        sellingItems: sellingItemsData
     };
 };

@@ -78,9 +78,17 @@ func CreateProduct() gin.HandlerFunc {
 			return
 		}
 
+		product.ID = primitive.NewObjectID()
+
+		_, err = userCollection.UpdateOne(ctx, bson.M{"user_id": c.GetString("uid")}, bson.M{"$addToSet": bson.M{"selling_items": product.ID}})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while updating user selling items"})
+			return
+		}
+
 		product.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		product.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-		product.ID = primitive.NewObjectID()
 
 		result, insertErr := productCollection.InsertOne(ctx, product)
 

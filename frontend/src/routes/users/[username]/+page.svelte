@@ -15,7 +15,19 @@
       wishlist: string[];
     };
     wishlist: {
-      _id: string;
+      ID: string;
+      name: string;
+      description: string;
+      price: number;
+      category: string;
+      status: string;
+      seller_id: string;
+      picture: string;
+      created_at: string;
+      updated_at: string;
+    }[];
+    sellingItems: {
+      ID: string;
       name: string;
       description: string;
       price: number;
@@ -91,7 +103,55 @@
                   {data.user.username}'s Wishlist
                 </h4>
                 <ul>
+                  {#if data.wishlist.length === 0}
+                    <p class="text-blueGray-400">No products in wishlist</p>
+                  {/if}
                   {#each data.wishlist as product}
+                    <a href="/products/{product.ID}">
+                      <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
+                        <div class="flex">
+                          <div class="w-1/4">
+                            {#if product.picture}
+                              <img
+                                src={product.picture}
+                                alt={product.name}
+                                class="w-full h-48 rounded-full object-cover"
+                              />
+                            {:else}
+                              <img
+                                src="https://sudbury.legendboats.com/resource/defaultProductImage"
+                                alt={product.name}
+                                class="w-full h-48 rounded-full object-cover"
+                              />
+                            {/if}
+                          </div>
+                          <div class="w-3/4 pl-4">
+                            <h5 class="text-xl font-semibold">{product.name}</h5>
+                            <p class="text-blueGray-600">{product.description}</p>
+                            <p class="text-blueGray-400">Category: {product.category}</p>
+                            <p class="text-blueGray-400">Price: ${product.price.toFixed(2)}</p>
+                            <p class="text-blueGray-400">Status: {product.status}</p>
+                          </div>
+                        </div>
+                      </li>
+                    </a>
+                  {/each}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {:else}
+          <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
+            <div class="flex flex-wrap justify-center">
+              <div class="w-full lg:w-9/12 px-4">
+                <h4 class="text-2xl font-semibold leading-normal mb-4 text-blueGray-700">
+                  {data.user.username}'s Products for Sale
+                </h4>
+                <ul>
+                  {#if data.sellingItems.length === 0}
+                    <p class="text-blueGray-400">No products for sale</p>
+                  {/if}
+                  {#each data.sellingItems as product}
                     <a href="/products/{product.ID}">
                       <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
                         <div class="flex">
