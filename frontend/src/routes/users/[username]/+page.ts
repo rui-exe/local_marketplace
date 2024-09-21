@@ -30,8 +30,6 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
     const wishlistData = await wishlistRequest.json();
 
-    console.log('wishlistData', wishlistData);
-
     const sellingItemsRequest = await fetch(`http://localhost:8080/users/selling_items/${username}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -44,8 +42,6 @@ export const load: PageLoad = async ({ params, fetch }) => {
     }
 
     const sellingItemsData = await sellingItemsRequest.json();
-
-    console.log('sellingItemsData', sellingItemsData);
 
     return {
         user: userData,
