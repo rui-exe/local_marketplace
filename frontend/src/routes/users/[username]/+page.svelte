@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="https://demos.creative-tim.com/notus-js/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
 
 <script lang="ts">
-	import { username } from "../../../stores/auth";
 
   export let data: {
     user: {

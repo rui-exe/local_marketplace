@@ -1,7 +1,11 @@
 <!-- src/routes/signup.svelte -->
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { authenticated } from '../../stores/auth';
+
+  $: if ($authenticated) {
+    goto('/');
+  }
   let username = '';
   let email = '';
   let password = '';

@@ -1,4 +1,11 @@
-<script>
+<script lang="ts">
+    import { authenticated } from "../../stores/auth";
+    import { goto } from '$app/navigation';
+
+    $: if ($authenticated) {
+        goto('/');
+    }
+
     let email = '';
     let password = '';
     let error = '';
