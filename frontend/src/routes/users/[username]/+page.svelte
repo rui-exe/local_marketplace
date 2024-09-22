@@ -55,7 +55,7 @@
   </section>
   <section class="relative py-16 bg-blueGray-200">
     <div class="container mx-auto px-4">
-      <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg -mt-64">
+      <div class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-xl rounded-lg -mt-64">
         <div class="px-6">
           <div class="flex flex-wrap justify-center">
             <div class="w-full lg:w-3/12 px-4 lg:order-2 flex justify-center">
@@ -75,7 +75,7 @@
             </div>
           </div>
           <div class="text-center mt-12">
-            <h3 class="text-4xl font-semibold leading-normal text-blueGray-700 mb-2">
+            <h3 class="text-4xl font-semibold leading-normal text-white mb-2">
             {data.user.username}
             </h3>
             <div class="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
@@ -83,10 +83,10 @@
               <br>
               Phone: {data.user.phone}
             </div>
-            <div class="mb-2 text-blueGray-600 mt-10">
+            <div class="mb-2 text-white mt-10">
               Email: {data.user.email}
             </div>
-            <div class="mb-2 text-blueGray-600">
+            <div class="mb-2 text-white">
               {#if data.user.role === 'BUYER'}
                 <span class="text-red-500">Buyer</span>
               {:else}
@@ -98,16 +98,16 @@
           <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
             <div class="flex flex-wrap justify-center">
               <div class="w-full lg:w-9/12 px-4">
-                <h4 class="text-2xl font-semibold leading-normal mb-4 text-blueGray-700">
+                <h4 class="text-2xl font-semibold leading-normal mb-4 text-white">
                   {data.user.username}'s Wishlist
                 </h4>
                 <ul>
                   {#if data.wishlist.length === 0}
-                    <p class="text-blueGray-400">No products in wishlist</p>
+                    <p class="text-white">No products in wishlist</p>
                   {/if}
                   {#each data.wishlist as product}
                     <a href="/products/{product.ID}">
-                      <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
+                      <li class="mb-6 bg-gray-700 rounded-lg shadow-lg p-4">
                         <div class="flex">
                           <div class="w-1/4">
                             {#if product.picture}
@@ -125,11 +125,11 @@
                             {/if}
                           </div>
                           <div class="w-3/4 pl-4">
-                            <h5 class="text-xl font-semibold">{product.name}</h5>
-                            <p class="text-blueGray-600">{product.description}</p>
-                            <p class="text-blueGray-400">Category: {product.category}</p>
-                            <p class="text-blueGray-400">Price: ${product.price.toFixed(2)}</p>
-                            <p class="text-blueGray-400">Status: {product.status}</p>
+                            <h5 class="text-xl font-semibold text-white">{product.name}</h5>
+                            <p class="text-white">Description: {product.description}</p>
+                            <p class="text-white">Category: {product.category}</p>
+                            <p class="text-white">Price: ${product.price.toFixed(2)}</p>
+                            <p class="text-white">Status: {product.status}</p>
                           </div>
                         </div>
                       </li>
@@ -140,19 +140,19 @@
             </div>
           </div>
           {:else}
-          <div class="mt-10 py-10 border-t border-blueGray-200 text-center">
+          <div class="mt-10 py-10 text-center">
             <div class="flex flex-wrap justify-center">
               <div class="w-full lg:w-9/12 px-4">
-                <h4 class="text-2xl font-semibold leading-normal mb-4 text-blueGray-700">
+                <h4 class="text-2xl font-semibold leading-normal mb-4 text-white">
                   {data.user.username}'s Products for Sale
                 </h4>
                 <ul>
                   {#if data.sellingItems.length === 0}
-                    <p class="text-blueGray-400">No products for sale</p>
+                    <p class="text-white">No products for sale</p>
                   {/if}
                   {#each data.sellingItems as product}
                     <a href="/products/{product.ID}">
-                      <li class="mb-6 bg-gray-100 rounded-lg shadow-lg p-4">
+                      <li class="mb-6 bg-gray-700 rounded-lg shadow-lg p-4">
                         <div class="flex">
                           <div class="w-1/4">
                             {#if product.picture}
@@ -170,11 +170,11 @@
                             {/if}
                           </div>
                           <div class="w-3/4 pl-4">
-                            <h5 class="text-xl font-semibold">{product.name}</h5>
-                            <p class="text-blueGray-600">{product.description}</p>
-                            <p class="text-blueGray-400">Category: {product.category}</p>
-                            <p class="text-blueGray-400">Price: ${product.price.toFixed(2)}</p>
-                            <p class="text-blueGray-400">Status: {product.status}</p>
+                            <h5 class="text-xl font-semibold text-white">{product.name}</h5>
+                            <p class="text-white">Description: {product.description}</p>
+                            <p class="text-white">Category: {product.category}</p>
+                            <p class="text-white">Price: ${product.price.toFixed(2)}</p>
+                            <p class="text-white">Status: {product.status}</p>
                           </div>
                         </div>
                       </li>
